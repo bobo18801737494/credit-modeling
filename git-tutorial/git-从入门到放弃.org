@@ -1,37 +1,19 @@
 #+title: Git —— 从入门到放弃
-#+author: 王闰生
-#+email: runsheng.wang@yooli.com
+#+OPTIONS: \n:t num:t
 
-* 场景                                                                 :废话:
-在多人合作完成某一个项目时，如果不使用一套强大高效的版本控制系统，就可能面临以下困境：
-*** 困境：备份
-- 某一个项目的所有文件只保存在自己的电脑上，结果有一天硬盘原地爆炸了，所有文件全部丢失
-- 放心地把项目保存在某某网盘上，结果有一天该网盘因为涉黄被查水表，本地没有备份，文件全部丢失
+* 简介
+这是一个非常简短的 Git 教程，写出来主要是为了在现场讲解时用。
 
-*** 困境：同步
-- 把项目保存在自己的电脑和 U 盘上，并且在某某网盘里也有备份，在编辑了本地文件之后，想要让网盘中的文件也 up to date 就需要手动重新上传
+想要深入学习 git，可以看末尾的参考资料链接。
 
-*** 困境：合作
-- 使用 dropbox 之后可以让每个地方的文件自动同步，但是和自己共同做项目的小伙伴们却不知道其它人更改了那些文件的哪些部分
-  
-*** 困境：回溯
-- 使用方法 A 完成了任务，老板要求改成方法 B；再使用方法 B 完成了任务，老板又要求再改回方法 A
-- 猪队友试图去优化你前一天的成果，结果把整个项目给改得面目全非，你想让整个项目回到前一天的状态，却不知道他做了哪些改动
-
-*** 困境：分支
-- 你想让两批人同时使用 A、B 两种策略任务，但是这两批人的公共模块很难去同步
-- 为了一点小小的策略分歧，不得不把整个工程文件 copy 成两份
-
-** VCS 的概念
-精辟版：版本控制的本质就是追踪并操作一个工程文件的 *所有状态* 。
-啰嗦版：[[https://zh.wikipedia.org/wiki/%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6][维基百科-版本控制]]
+建议各位在了解 git 概念之后直接用图形界面，别敲命令行了。
 
 * Git 中的重要概念
 ** git 仓库
-git 仓库，全称 git repository，一般简称为 repo，实际上就是一个用 git 来管理的文件夹。
+git 仓库，全称 git repository，一般简称为 repo，实际上就是一个用 git 来追踪管理的文件夹。
 
 ** 远程仓库
-名字比较高端，实际上就是服务器上的一个 repo。
+名字比较高端，实际上就是服务器上的一个仓库(repo)。
 
 ** 工作区
 工作区就是当前工程文件夹里能够"所见即所得"地看到的部分。
@@ -57,9 +39,7 @@ git 可以对某一个版本打上标签，一般都是用来标记版本号。�
 * Git 基本操作
 以下这些操作都默认是在命令行下进入到项目根目录下进行：
 ** init
-#+begin_src
-git init
-#+end_src
+: git init
 运行这条命令会把一个普通的文件夹变为一个被 git 追踪的 git repository，实际上就是在这个文件夹里创建了一个隐藏的 =.git= 文件夹。
 
 ** status
@@ -73,92 +53,79 @@ git status
 - 某些文件的更改
 
 ** add(stage)
-#+begin_src
-git add [filename]
-#+end_src
+: git add [filename]
 用来将当前工作区中的某些更改加入暂存区。可以只将一部分更改加入暂存区，也可以用
 
-#+begin_src
-git add -A
-#+end_src
+: git add .
 来把当前工作区的所有更改都加入暂存区。
 
 ** commit
-#+begin_src
-git commit -m "your comment"
-#+end_src
+: git commit -m "your comment"
 这条命令将当前已经被加入暂存区的所有更改都加入版本库形成一个新的版本，该版本的编号为一串数字与字母的混合物，后面会跟着你对本次更改的描述。
 
 ** log
-#+begin_src
-git log
-#+end_src
-
+: git log
 使用 git log 会得到所有的版本以及版本说明、以及版本指针所处的位置。这条命令得到的输出比较冗长，使用
 
-#+begin_src
-git log --pretty=oneline
-#+end_src
-
-会得到更为简练的结果。
+: git log --pretty=oneline
+会得到显示得更为简练的结果。
 
 ** reset
 =reset= 命令最主要的命令是切换版本与取消暂存。
 *** 切换版本
-#+begin_src
-git reset --hard HAED^
-#+end_src
+: git reset --hard HAED^
 
 =HEAD= 指针指向当前版本， =HEAD^= 代表上一个版本(以此类推， =HEAD^^= 代表上一个版本)，上面这行命令的效果就是回退到上一个版本(本质上就是改变了 =HEAD^= 指针所指向的位置)。
 
 当要往前回退 10 个版本的时候，输入 =HEAD^^^^^^^^^^= 是比较麻烦的，这个时候可以通过版本编号来确定回退的位置。使用 =git log= 命令会列出所有的版本以及每个版本对应的唯一版本编号，通过这个唯一版本编号可以精准控制回溯到哪个版本。
 
-#+begin_src
-git reset --hard e475afc
-#+end_src
+: git reset --hard e475afc
 
 这样一条命令会让整个工作区回退到版本编号为 =e475afc= 的版本
 
 如果从当前版本回退到了上一个版本，再使用 =git log= 命令会发现找不到最新的那个版本了，就像用时光机传送到过去之后发现过去的科技太落后没法回到未来。好在这时可以靠以下命令来找到曾经出现过的所有版本：
 
-#+begin_src
-git reflog
-#+end_src
+: git reflog
 
 =git reflog= 这个命令列出的不光是版本编号，还包括诸如回溯版本这样的操作的历史记录。BTW，在从本地仓库 push 到远程仓库时，如果两边的 reflog 对不上的话是没法成功 push 上去的。
 
 *** 取消暂存(unstage)
 =reset= 命令也可以用来撤销 =git add= 的操作，比如：
-#+begin_src
-git reset filename
-#+end_src
 
-这条命令会把已经加入暂存区的一个文件更改给拿回来，如果加文件名，直接使用 =git reset= 会把已经放入暂存区的更改全部取回。
+: git reset filename
+
+这条命令会把已经加入暂存区的一个文件更改给拿回来，如果加文件名，直接使用
+
+: git reset HEAD
+
+会把已经放入暂存区的更改全部取回。
 
 ** checkout
 =checkout= 这个命令的使用非常灵活，同时也比较危险，因为这条命令会重写工作区。
 *** 操作分支
 =checkout= 这个命令的一个重要作用就是产生分支：
-#+begin_src
-git checkout -b case2
-#+end_src
+
+: git checkout -b case2
 
 这样一条命令的效果是从当前版本分裂出一条名为 =case2= 的分支(本质上就是增加了一个新的版本指针)，并且让自己当前处于新建的分支上。如果这个时候使用 =commit= 命令，新的版本会被添加到新建的这条分支上，而不是初始的 =master= 分支上。
 
 要切换而不是新建分支，可以这样：
 
-#+begin_src
-git checkout master
-#+end_src
+: git checkout master
 
 这条命令的效果就是切换到名为 =master= 的分支上。这里切换分支这个操作的本质其实就是让 =HEAD= 指针和名为 =master= 的指针指向同一个版本。
 
 *** 取消工作区的更改
-#+begin_src
-git checkout .
-#+end_src
+
+: git checkout .
 
 这条命令会直接撤销掉没有被 commit 的所有更改，将 =.= 换成某个文件的名字可以只撤销某一个文件在工作区的更改。
+
+如果要撤销掉所有之前没有被 git 追踪过的文件，可用
+
+: git clean -f
+
+来删除这些文件
 
 ** merge
 以下命令将 =merge= 分支合并到 =master= 分支：
@@ -171,9 +138,8 @@ git merge test
 
 ** remote
 在拥有相应权限的前提下，建立本地仓库与远程仓库的联系：
-#+begin_src
-git remote add origin git@gitee.com:wangrunsheng/bit-torrent-of-anrihoshizaki.git
-#+end_src
+
+: git remote add origin git@gitee.com:wangrunsheng/bit-torrent-of-anrihoshizaki.git
 
 这样就把本地仓库与服务器上的仓库联系起来了。 =origin= 是这个连接的默认名字，也可以自己随意更改，后面的参数是远程仓库的 SSH 地址。
 
@@ -181,21 +147,16 @@ git remote add origin git@gitee.com:wangrunsheng/bit-torrent-of-anrihoshizaki.gi
 
 可以通过以下命令来查看当前这个仓库关联了哪些远程仓库：
 
-#+begin_src
-git remote -v
-#+end_src
+: git remote -v
 
 ** push
 将本地某个分支上已经 commit 的更改推送到远程仓库：
-#+begin_src
-git push origin master
-#+end_src
+
+: git push origin master
 
 如果本地多个分支上都有新 commit 的内容，可以使用以下命令一次性 push 所有分支：
 
-#+begin_src
-git push --all origin
-#+end_src
+: git push --all origin
 
 ** fetch & pull
 将远程仓库新 commit 的内容拉取到本地，用法与 =push= 基本相似。
@@ -204,20 +165,20 @@ git push --all origin
 
 ** blame
 一条神奇的命令。
-#+begin_src
-git blame filename
-#+end_src
+
+: git blame filename
 
 * 配置
 ** 安装 git
 *** 安装方式
-在 Linux 和 mac os 系统上，git 一般是自带的，windows 上需要 [[https://git-scm.com/download/win][下载 git 安装包 ]]来安装 git，安装过程中一路 next 即可。
+在 Linux 和 MacOS 系统上，git 一般是自带的，windows 上需要 [[https://git-scm.com/download/win][下载 git 安装包 ]]来安装 git，安装过程中一路 next 即可。
 
 *** 验证安装
 安装完成后，在命令行输入 =git --version= ，如果返回类似 =git version 2.16.2.windows.1= 这样的结果，证明 git 被成功安装并已自动加入了环境变量。
 
 ** git bash
 bash 是 Linux 系统的标准 shell，在安装 git 后出现的 git bash for windows 是和 cmd，powershell 并列的一种命令行工具，可以在 windows 上使用部分 Linux 命令。
+
 在 windows 系统，凡是遇到需要在命令行下使用 git 命令的时候，直接使用 git bash 是无咎无誉的。
 
 ** 用户信息设置
@@ -273,7 +234,7 @@ Welcome to Gitee.com, yourname!
 #+end_src
 证明公钥添加成功。
 
-* Referrence
+* 参考资料
 - [[https://git-scm.com/book/zh/v1/][Pro Git]]
 - [[https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000][git 教程]]
 - [[https://www.git-tower.com/learn/git/ebook/cn/command-line/introduction#start][Learn Version Control with Git]]
